@@ -19,13 +19,14 @@ def get_bible_json(path, overwrite):
     assert (len(keys) == 1)
     version = list(keys)[0]
     module = found_modules[version]
+    language = module['lang']
 
     meta = {
         'source': 'sword',
         'swordVersion': module['version'],
         'swordVersionDate': module['swordversiondate'],
         'encoding': module['encoding'].lower(),
-        'language': module['lang'],
+        'language': language,
         'license': module['distributionlicense']
     }
 
@@ -35,7 +36,7 @@ def get_bible_json(path, overwrite):
 
     report = Report(version)
 
-    exists_obj = does_bible_json_exist(version)
+    exists_obj = does_bible_json_exist(version, language)
     if exists_obj['exists'] and not overwrite:
         print(f'{version} - skipping')
         return None
@@ -61,7 +62,7 @@ def get_bible_json(path, overwrite):
 
     for book_idx, book in enumerate(raw_books):
 
-        pprint(vars(book))
+        # pprint(vars(book))
 
         report.processed(book_idx + 1, book.osis_name, start)
 
@@ -71,6 +72,7 @@ def get_bible_json(path, overwrite):
         for chapter in range_chapters:
 
             raw_verses = book.get_indicies(chapter)
+            # pprint(raw_verses)
             verses = []
 
             for verseIdx, verse in enumerate(raw_verses):
@@ -92,6 +94,13 @@ def get_bible_json(path, overwrite):
                     text = None
 
                 if text is not None:
+
+                    while '  ' in text:
+                        text = text.replace('  ', ' ')
+
+                    text = text.replace('\u2013', '-')
+                    text = text.replace('\u2019', '\'')
+
                     verse = {
                         'number': verseIdx + 1,
                         'text': text
