@@ -6,11 +6,11 @@ from py.helpers import does_bible_json_exist
 from py.helpers import write_bible_json
 from py.Report import Report
 from pprint import pprint  # pprint(vars(book))
+encoding = 'utf-8'
 
 
 # noinspection PyProtectedMember
 def get_bible_json(path, overwrite):
-    expected_encoding = 'utf-8'
 
     modules = SwordModules(path)
     found_modules = modules.parse_modules()
@@ -28,7 +28,10 @@ def get_bible_json(path, overwrite):
         'language': module['lang'],
         'license': module['distributionlicense']
     }
-    assert (meta['encoding'] == expected_encoding)
+
+    # on writing to file we enforce our encoding
+    actual_encoding = meta['encoding']
+    assert actual_encoding == encoding, f'{version} - expected encoding {encoding} but got {actual_encoding}'
 
     report = Report(version)
 
@@ -40,7 +43,7 @@ def get_bible_json(path, overwrite):
     bible = modules.get_bible_from_module(version)
     # pprint(vars(bible))
 
-    assert (bible._encoding == expected_encoding)
+    assert (bible._encoding == encoding)
 
     bible_structure = bible.get_structure()
     # pprint(vars(bible_structure))
@@ -103,7 +106,8 @@ def get_bible_json(path, overwrite):
 
         books.append({
             'name': book.osis_name,
-            'chapters': chapters
+            'verses_per_chapter': book.chapter_lengths,
+            'chapters': chapters,
         })
 
     print()
@@ -126,7 +130,7 @@ def main():
     for path in paths:
         bible = get_bible_json(str(path), overwrite)
         if bible is not None:
-            write_bible_json(bible, partials)
+            write_bible_json(bible, partials, encoding)
 
 
 if __name__ == '__main__':
