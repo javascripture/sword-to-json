@@ -1,26 +1,28 @@
-from pathlib import Path
 import argparse
 import time
+from pathlib import Path
 from pysword.modules import SwordModules
 from py.helpers import does_bible_json_exist
 from py.helpers import write_bible_json
 from py.Report import Report
-from pprint import pprint  # pprint(vars(book))
+
 encoding = 'utf-8'
 
 
 # noinspection PyProtectedMember
 def get_bible_json(path, overwrite):
 
+    # load sword module
     modules = SwordModules(path)
     found_modules = modules.parse_modules()
-    # pprint(found_modules)
     keys = found_modules.keys()
     assert (len(keys) == 1)
     version = list(keys)[0]
     module = found_modules[version]
-    language = module['lang']
+    report = Report(version)
 
+    # get metadata
+    language = module['lang']
     meta = {
         'source': 'sword',
         'swordVersion': module['version'],
@@ -30,57 +32,48 @@ def get_bible_json(path, overwrite):
         'license': module['distributionlicense']
     }
 
-    # on writing to file we enforce our encoding
     actual_encoding = meta['encoding']
     assert actual_encoding == encoding, f'{version} - expected encoding {encoding} but got {actual_encoding}'
 
-    report = Report(version)
-
+    # skip if JSON exists
     exists_obj = does_bible_json_exist(version, language)
     if exists_obj['exists'] and not overwrite:
         print(f'{version} - skipping')
         return None
 
+    # get raw bible books
     bible = modules.get_bible_from_module(version)
-    # pprint(vars(bible))
-
     assert (bible._encoding == encoding)
-
     bible_structure = bible.get_structure()
-    # pprint(vars(bible_structure))
-
     assert (bible_structure._book_offsets is None)
     raw_books = bible_structure._books['ot'] + bible_structure._books['nt']
+    assert len(raw_books) == 66
 
+    # init processing
     print('==================================================')
     print(f'{version} - processing in progress, please wait')
-
-    all_verses = []
-    books = []
-
     start = time.time()
 
+    # main processing
+    books = []
     for book_idx, book in enumerate(raw_books):
 
-        # pprint(vars(book))
-
         report.processed(book_idx + 1, book.osis_name, start)
+        range_chapters = range(0, book.num_chapters)
 
-        range_chapters = range(1, book.num_chapters + 1)
         chapters = []
+        for chapter_idx in range_chapters:
 
-        for chapter in range_chapters:
+            chapter_num = chapter_idx + 1
+            raw_verses = book.get_indicies(chapter_num)
 
-            raw_verses = book.get_indicies(chapter)
-            # pprint(raw_verses)
             verses = []
+            for verse_idx, xxxxx in enumerate(raw_verses):
 
-            for verseIdx, verse in enumerate(raw_verses):
-
-                # verse_ref = book.osis_name + ' ' + str(chapter) + ':' + str(verseIdx + 1)
+                verse_num = verse_idx + 1
 
                 try:
-                    text = bible.get(books=[book.name], chapters=[chapter], verses=[verseIdx + 1])
+                    text = bible.get(books=[book.name], chapters=[chapter_num], verses=[verse_num])
                 except Exception as e:
                     if 'incorrect header' in str(e):
                         text = None
@@ -88,6 +81,7 @@ def get_bible_json(path, overwrite):
                         raise e
 
                 if text is not None:
+                    # TIDYUP - trim
                     text = text.strip()
 
                 if text == '':
@@ -95,21 +89,21 @@ def get_bible_json(path, overwrite):
 
                 if text is not None:
 
+                    # TIDYUP - remove double spaces
                     while '  ' in text:
                         text = text.replace('  ', ' ')
 
+                    # TIDYUP - replace horrible chars
                     text = text.replace('\u2013', '-')
                     text = text.replace('\u2019', '\'')
 
-                    verse = {
-                        'number': verseIdx + 1,
-                        'text': text
-                    }
-                    verses.append(verse)
-                    all_verses.append(verse)
+                verses.append({
+                    'number': verse_num,
+                    'text': text
+                })
 
             chapters.append({
-                'number': chapter,
+                'number': chapter_num,
                 'verses': verses
             })
 
