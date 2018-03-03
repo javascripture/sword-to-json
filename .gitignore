@@ -1,0 +1,6 @@
+/.idea/*
+!/.idea/runConfigurations
+
+/venv/
+__pycache__/
+/bibles/**/*-partial.json
