@@ -18,22 +18,28 @@ def write_bible_json(bible, partials, encoding):
     language = bible['meta']['language']
     exists_obj = does_bible_json_exist(version, language)
 
+    # make dir if not exists
     if not os.path.exists(exists_obj['path']):
         os.makedirs(exists_obj['path'])
 
+    # write real JSON file
     print(f'{version} - writing JSON file')
     with open(exists_obj['filename'], 'w', encoding=encoding) as f:
         json.dump(bible, f, ensure_ascii=False)
 
+    # pretty partial JSON file, only used for understanding JSON structure
+    # the partial file is git ignored
     if partials:
         for book in bible['books']:
             is_genesis = book['name'].lower().startswith('ge') or book['name'].lower().startswith('gn')
 
+            # to understand JSON structure, verses per chapter is generally too much info
             if is_genesis:
                 book['verses_per_chapter'] = book['verses_per_chapter'][:3]
             else:
                 book['verses_per_chapter'] = []
 
+            # to understand JSON structure, we only want certain verses
             for chapter in book['chapters']:
                 if is_genesis and chapter['number'] == 1:
                     chapter['verses'] = chapter['verses'][:3]
@@ -44,6 +50,7 @@ def write_bible_json(bible, partials, encoding):
                 else:
                     chapter['verses'] = []
 
+        # write partial JSON file
         partial_filename = re.sub('.json$', '-partial.json', exists_obj['filename'])
         with open(partial_filename, 'w', encoding=encoding) as f:
             f.write(json.dumps(bible, indent=2, ensure_ascii=False))

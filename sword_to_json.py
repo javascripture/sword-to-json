@@ -11,7 +11,6 @@ encoding = 'utf-8'
 
 # noinspection PyProtectedMember
 def get_bible_json(path, overwrite):
-
     # load sword module
     modules = SwordModules(path)
     found_modules = modules.parse_modules()
