@@ -15,7 +15,7 @@ def get_bible_json(path, overwrite):
     modules = SwordModules(path)
     found_modules = modules.parse_modules()
     keys = found_modules.keys()
-    assert (len(keys) == 1)
+    assert len(keys) == 1
     version = list(keys)[0]
     module = found_modules[version]
     report = Report(version)
@@ -32,7 +32,7 @@ def get_bible_json(path, overwrite):
     }
 
     actual_encoding = meta['encoding']
-    assert actual_encoding == encoding, f'{version} - expected encoding {encoding} but got {actual_encoding}'
+    assert actual_encoding == encoding, f'{version} - expected module encoding {encoding} but got {actual_encoding}'
 
     # skip if JSON exists
     exists_obj = does_bible_json_exist(version, language)
@@ -42,9 +42,9 @@ def get_bible_json(path, overwrite):
 
     # get raw bible books
     bible = modules.get_bible_from_module(version)
-    assert (bible._encoding == encoding)
+    assert bible._encoding == encoding, f'{version} - expected bible encoding {encoding} but got {bible._encoding}'
     bible_structure = bible.get_structure()
-    assert (bible_structure._book_offsets is None)
+    assert bible_structure._book_offsets is None
     raw_books = bible_structure._books['ot'] + bible_structure._books['nt']
     assert len(raw_books) == 66
 
@@ -52,10 +52,10 @@ def get_bible_json(path, overwrite):
     print('==================================================')
     print(f'{version} - processing in progress, please wait')
     start = time.time()
-
-    # main processing
     chapter_count = 0
     verse_count = 0
+
+    # main processing
     books = []
     for book_idx, book in enumerate(raw_books):
 
