@@ -118,6 +118,7 @@ def get_bible_json(path, overwrite):
 
     print()
     report.summary(len(books), chapter_count, verse_count)
+    assert chapter_count == 1189
     return {
         'version': version,
         'meta': meta,
