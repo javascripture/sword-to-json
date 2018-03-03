@@ -137,7 +137,7 @@ def main():
     for path in paths:
         bible = get_bible_json(str(path), overwrite)
         if bible is not None:
-            write_bible_json(bible, partials, encoding)
+            write_bible_json(bible, partials)
 
 
 if __name__ == '__main__':

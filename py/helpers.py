@@ -13,9 +13,10 @@ def does_bible_json_exist(version, language):
     }
 
 
-def write_bible_json(bible, partials, encoding):
+def write_bible_json(bible, partials):
     version = bible['version']
     language = bible['meta']['language']
+    encoding = bible['meta']['encoding']
     exists_obj = does_bible_json_exist(version, language)
 
     # make dir if not exists
