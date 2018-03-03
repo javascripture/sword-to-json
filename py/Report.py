@@ -20,19 +20,4 @@ class Report:
         sys.stdout.flush()
 
     def summary(self, books, chapters, verses):
-        print()
         print(f'{self.version} - processing complete with {books} books {chapters} chapters {verses} verses')
-
-    def omitted(self, omitted):
-        if len(omitted):
-            print(f'{self.version} - {len(omitted)} omitted verses found:')
-            print(omitted)
-        else:
-            print(f'{self.version} - no omitted verses found')
-
-    def eoc(self, eoc):
-        if len(eoc):
-            print(f'{self.version} - {len(eoc)} end of chapter differences found:')
-            print(eoc)
-        else:
-            print(f'{self.version} - no end of chapter differences found')

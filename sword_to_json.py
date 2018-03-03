@@ -55,6 +55,8 @@ def get_bible_json(path, overwrite):
     start = time.time()
 
     # main processing
+    chapter_count = 0
+    verse_count = 0
     books = []
     for book_idx, book in enumerate(raw_books):
 
@@ -101,11 +103,13 @@ def get_bible_json(path, overwrite):
                     'number': verse_num,
                     'text': text
                 })
+                verse_count += 1
 
             chapters.append({
                 'number': chapter_num,
                 'verses': verses
             })
+            chapter_count += 1
 
         books.append({
             'name': book.osis_name,
@@ -114,6 +118,7 @@ def get_bible_json(path, overwrite):
         })
 
     print()
+    report.summary(len(books), chapter_count, verse_count)
     return {
         'version': version,
         'meta': meta,
