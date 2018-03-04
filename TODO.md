@@ -1,4 +1,15 @@
+started with 13 versions:
+  OJB drooped due to versification
+  ISV dropped due to NT only
+  WMB dropped due to pysword failure
+  LEB dropped due to pysword failure
+
+
+
+
+
 run with more modules
+add more meta
 update README
 
 

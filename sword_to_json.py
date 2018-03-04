@@ -6,7 +6,8 @@ from py.helpers import does_bible_json_exist
 from py.helpers import write_bible_json
 from py.Report import Report
 
-encoding = 'utf-8'
+# from pprint import pprint  # pprint(vars(book))
+default_encoding = 'utf-8'
 
 
 # noinspection PyProtectedMember
@@ -20,37 +21,53 @@ def get_bible_json(path, overwrite):
     module = found_modules[version]
     report = Report(version)
 
+    print('==================================================')
+    print(f'{version} - processing in progress, please wait')
+
     # get metadata
     language = module['lang']
     meta = {
         'source': 'sword',
         'swordVersion': module['version'],
         'swordVersionDate': module['swordversiondate'],
-        'encoding': module['encoding'].lower(),
+        'encoding': module['encoding'].lower() if module.get('encoding') else None,
         'language': language,
         'license': module['distributionlicense']
     }
 
     actual_encoding = meta['encoding']
-    assert actual_encoding == encoding, f'{version} - expected module encoding {encoding} but got {actual_encoding}'
+    assert actual_encoding == default_encoding or actual_encoding is None, f'{version} - expected module encoding {default_encoding} but got {actual_encoding}'
 
     # skip if JSON exists
     exists_obj = does_bible_json_exist(version, language)
     if exists_obj['exists'] and not overwrite:
-        print(f'{version} - skipping')
+        print(f'{version} - skipping, already exists')
         return None
 
     # get raw bible books
-    bible = modules.get_bible_from_module(version)
-    assert bible._encoding == encoding, f'{version} - expected bible encoding {encoding} but got {bible._encoding}'
+    # noinspection PyBroadException
+    try:
+        bible = modules.get_bible_from_module(version)
+    except Exception as e:
+        print(f'{version} - aborting, pysword failure .. {e}')
+        return None
+
+    assert bible._encoding == default_encoding or bible._encoding is None, f'{version} - expected bible encoding {default_encoding} but got {bible._encoding}'
     bible_structure = bible.get_structure()
     assert bible_structure._book_offsets is None
+
+    if bible_structure._books.get('ot') is None:
+        print(f'{version} - aborting, old testament missing')
+        return None
+
+    if bible_structure._books.get('nt') is None:
+        print(f'{version} - aborting, new testament missing')
+        return None
+
     raw_books = bible_structure._books['ot'] + bible_structure._books['nt']
     assert len(raw_books) == 66
 
     # init processing
-    print('==================================================')
-    print(f'{version} - processing in progress, please wait')
     start = time.time()
     chapter_count = 0
     verse_count = 0

@@ -2,6 +2,8 @@ import json
 import os
 import re
 
+default_encoding = 'utf-8'
+
 
 def does_bible_json_exist(version, language):
     path = os.path.abspath(f'bibles/{language}/{version}')
@@ -16,7 +18,7 @@ def does_bible_json_exist(version, language):
 def write_bible_json(bible, partials):
     version = bible['version']
     language = bible['meta']['language']
-    encoding = bible['meta']['encoding']
+    encoding = bible['meta']['encoding'] or default_encoding
     exists_obj = does_bible_json_exist(version, language)
 
     # make dir if not exists
