@@ -6,13 +6,14 @@ started with 13 versions:
 
 
 
-
-
-run with more modules
-add more meta
+fix version names
+run with all modules inc failed modules (then delete failed)
+add more meta, remove license field - see ESV
 update README
 
 
+
+YLT has <FI>is<Fi> which should be [is]
 
 ESV reported with 31104 verses (should be 31103) sounds like an EOC difference
 
