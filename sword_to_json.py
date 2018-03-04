@@ -5,7 +5,7 @@ from pysword.modules import SwordModules
 from py.helpers import does_bible_json_exist
 from py.helpers import write_bible_json
 from py.Report import Report
-from py.versions import lookup_version
+from py.versions import lookup_version_abbr, lookup_version_name
 
 # from pprint import pprint  # pprint(vars(book))
 default_encoding = 'utf-8'
@@ -19,7 +19,7 @@ def get_bible_json(path, overwrite):
     keys = found_modules.keys()
     assert len(keys) == 1
     sword_version = list(keys)[0]
-    version = lookup_version(sword_version)
+    version = lookup_version_abbr(sword_version)
     module = found_modules[sword_version]
     report = Report(version)
 
@@ -145,7 +145,8 @@ def get_bible_json(path, overwrite):
     report.summary(len(books), chapter_count, verse_count)
     assert chapter_count == 1189
     return {
-        'version': version,
+        'versionAbbr': version,
+        'versionName': lookup_version_name(sword_version),
         'meta': meta,
         'books': books
     }
