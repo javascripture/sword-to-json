@@ -23,16 +23,18 @@ def get_bible_json(path, overwrite):
 
     print('==================================================')
     print(f'{version} - processing in progress, please wait')
+    # pprint(module)
 
     # get metadata
     language = module['lang']
     meta = {
+        'description': module['description'] if module.get('description') and 'Strong' not in module['description'] else None,
         'source': 'sword',
-        'swordVersion': module['version'],
-        'swordVersionDate': module['swordversiondate'],
+        'swordVersion': module.get('version'),
+        'swordVersionDate': module.get('swordversiondate'),
         'encoding': module['encoding'].lower() if module.get('encoding') else None,
         'language': language,
-        'license': module['distributionlicense']
+        'license': module['distributionlicense'] if module.get('distributionlicense') and 'Strong' not in module['distributionlicense'] else None
     }
 
     actual_encoding = meta['encoding']
