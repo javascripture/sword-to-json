@@ -14,6 +14,8 @@ update README
 
 
 
+ESV reported with 31104 verses (should be 31103) sounds like an EOC difference
+
 KJV need to ensure that the 14 notes at the end of the epistles are not included:
 http://www.teachingtheword.org/apps/articles/?articleid=59199&view=post&blogid=5450
 
