@@ -34,7 +34,8 @@ def get_bible_json(path, overwrite):
         'swordVersionDate': module.get('swordversiondate'),
         'encoding': module['encoding'].lower() if module.get('encoding') else None,
         'language': language,
-        'license': module['distributionlicense'] if module.get('distributionlicense') and 'Strong' not in module['distributionlicense'] else None
+        'license': module['distributionlicense'] if module.get('distributionlicense') and 'Strong' not in module['distributionlicense'] else None,
+        'copyright': module.get('copyright') or module.get('shortcopyright')
     }
 
     actual_encoding = meta['encoding']
