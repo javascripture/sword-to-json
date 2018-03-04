@@ -5,6 +5,7 @@ from pysword.modules import SwordModules
 from py.helpers import does_bible_json_exist
 from py.helpers import write_bible_json
 from py.Report import Report
+from py.versions import lookup_version
 
 # from pprint import pprint  # pprint(vars(book))
 default_encoding = 'utf-8'
@@ -17,8 +18,9 @@ def get_bible_json(path, overwrite):
     found_modules = modules.parse_modules()
     keys = found_modules.keys()
     assert len(keys) == 1
-    version = list(keys)[0]
-    module = found_modules[version]
+    sword_version = list(keys)[0]
+    version = lookup_version(sword_version)
+    module = found_modules[sword_version]
     report = Report(version)
 
     print('==================================================')
@@ -50,7 +52,7 @@ def get_bible_json(path, overwrite):
     # get raw bible books
     # noinspection PyBroadException
     try:
-        bible = modules.get_bible_from_module(version)
+        bible = modules.get_bible_from_module(sword_version)
     except Exception as e:
         print(f'{version} - aborting, pysword failure .. {e}')
         return None
