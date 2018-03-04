@@ -8,7 +8,6 @@ started with 13 versions:
 
 fix version names
 run with all modules inc failed modules (then delete failed)
-add more meta, remove license field - see ESV
 update README
 
 
