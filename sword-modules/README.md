@@ -1,6 +1,6 @@
 Place zipped sword modules here or in any sub folder.
 
-Get zipped sword modules at:
+Download sword module ZIP files from:
 
 [Crosswire](http://crosswire.org/sword/modules/ModDisp.jsp?modType=Bibles "Jesus loves you")
 
