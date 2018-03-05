@@ -36,7 +36,7 @@ If our examples don't offer the translation you want, you can use `sword-to-json
 
 (4) Place the ZIP file for each sword module you want to convert into the [sword-modules](/sword-modules "Jesus loves you") folder or a sub folder thereof
 
-*NOTE: Download sword module ZIP files from [crosswire](http://crosswire.org/sword/modules/ModDisp.jsp?modType=Bibles "Jesus loves you") or [ebible](http://ebible.org/find  "Jesus loves you")*
+*NOTE: Download sword module ZIP files from [Crosswire](http://crosswire.org/sword/modules/ModDisp.jsp?modType=Bibles "Jesus loves you") or [Ebible](http://ebible.org/find  "Jesus loves you")*
 
 (5) run .. `python sword_to_json.py`
 
