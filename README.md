@@ -8,21 +8,9 @@
 
 ## Introduction
 
-`sword-to-json` converts Crosswire sword bible modules to JSON.
+`sword-to-json` [dumbly](#limitations) converts Crosswire sword bible modules to JSON.
 
 It does some minimalistic tidying up of verse data - trimming, removing double spaces, etc
-
-However `sword-to-json` does not attempt to fix sword verse data but dumbly provides data as is.
-
-For example, using the KJV sword module, [Romans 16:27 KJV](https://www.blueletterbible.org/kjv/rom/16/27/s_1062027 "Jesus loves you") reads:
-
-> To God only wise, be glory through Jesus Christ for ever. Amen. Written to the Romans from Corinthus, and sent by Phebe servant of the church at Cenchrea.
-
-Whereas it should read:
-
-> To God only wise, be glory through Jesus Christ for ever. Amen.
-
-The additional text being present in the KJV but not forming part of the verse itself.
 
 
 
@@ -73,6 +61,24 @@ For step (5) above you can run any of the following:
 NOTE: partial JSON only shows some of the data and is pretty printed. It only exists to help you understand the structure of the JSON and is otherwise useless.
 
 `python sword_to_json.py --overwrite --partials` - Creates JSON and partial JSON for sword modules without skipping
+
+
+
+<br>
+
+## Limitations
+
+`sword-to-json` does not attempt to fix sword verse data but dumbly provides data as is.
+
+For example, using the KJV sword module, [Romans 16:27 KJV](https://www.blueletterbible.org/kjv/rom/16/27/s_1062027 "Jesus loves you") reads:
+
+> To God only wise, be glory through Jesus Christ for ever. Amen. Written to the Romans from Corinthus, and sent by Phebe servant of the church at Cenchrea.
+
+Whereas it should read:
+
+> To God only wise, be glory through Jesus Christ for ever. Amen.
+
+The additional text being present in the KJV but not forming part of the verse itself.
 
 
 
