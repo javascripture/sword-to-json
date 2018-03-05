@@ -34,7 +34,7 @@ If our examples don't offer the translation you want, you can use `sword-to-json
 
 (3) Move to the root folder .. `cd sword-to-json`
 
-(4) Place the ZIP file for each sword module you want to convert into the [sword-modules](/sword-modules) folder or a sub folder
+(4) Place the ZIP file for each sword module you want to convert into the [sword-modules](/sword-modules) folder or a sub folder thereof
 
 NOTE: Download sword module ZIP files from [crosswire](http://crosswire.org/sword/modules/ModDisp.jsp?modType=Bibles "Jesus loves you") or [ebible](http://ebible.org/find  "Jesus loves you")
 
