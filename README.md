@@ -8,7 +8,7 @@
 
 ## Introduction
 
-`sword-to-json` [dumbly](#limitations) converts [Crosswire sword bible modules](http://crosswire.org/sword/modules/ModDisp.jsp?modType=Bibles "Jesus loves you") to JSON.
+`sword-to-json` [dumbly](#limitations "Jesus loves you") converts [Crosswire sword bible modules](http://crosswire.org/sword/modules/ModDisp.jsp?modType=Bibles "Jesus loves you") to JSON.
 
 It does some minimalistic tidying up of verse data - trimming, removing double spaces, etc
 
@@ -34,7 +34,7 @@ If our examples don't offer the translation you want, you can use `sword-to-json
 
 (3) Move to the root folder .. `cd sword-to-json`
 
-(4) Place the ZIP file for each sword module you want to convert into the [sword-modules](/sword-modules) folder or a sub folder thereof
+(4) Place the ZIP file for each sword module you want to convert into the [sword-modules](/sword-modules "Jesus loves you") folder or a sub folder thereof
 
 *NOTE: Download sword module ZIP files from [crosswire](http://crosswire.org/sword/modules/ModDisp.jsp?modType=Bibles "Jesus loves you") or [ebible](http://ebible.org/find  "Jesus loves you")*
 
