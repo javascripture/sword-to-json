@@ -50,7 +50,7 @@ If our examples don't offer the translation you want, you can use `sword-to-json
 
 ## Advanced Usage
 
-For step (5) above you can run any of the following:
+At step (5) above you can run any of the following:
 
 `python sword_to_json.py` Creates JSON for sword modules, skipping modules for which the JSON already exists
 
