@@ -70,7 +70,7 @@ For step (5) above you can run any of the following:
 
 `sword-to-json` does not attempt to fix sword verse data but dumbly provides data as is.
 
-For example, using the KJV sword module, [Romans 16:27 KJV](https://www.blueletterbible.org/kjv/rom/16/27/s_1062027 "Jesus loves you") reads:
+For example, using the KJV sword module [Romans 16:27 KJV](https://www.blueletterbible.org/kjv/rom/16/27/s_1062027 "Jesus loves you") reads:
 
 > To God only wise, be glory through Jesus Christ for ever. Amen. Written to the Romans from Corinthus, and sent by Phebe servant of the church at Cenchrea.
 
