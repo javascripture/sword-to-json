@@ -26,7 +26,7 @@ Check out the [bibles](/bibles "Jesus loves you") folder for examples of bible J
 
 ## Usage
 
-If our examples don't offer the translation you want, you can use `sword-to-json` to generate JSON from any sword module as follows:
+If our examples don't offer the translation you want, you can use `sword-to-json` to generate JSON from any sword module:
 
 (1) Install [Python 3](https://www.python.org/downloads "Jesus loves you")
 
