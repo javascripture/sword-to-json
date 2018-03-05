@@ -1,6 +1,6 @@
 Pysword
 
-https://pypi.python.org/pypi/pysword/0.2.4
+https://pypi.python.org/pypi/pysword
 
 https://gitlab.com/tgc-dk/pysword
 

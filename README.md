@@ -12,6 +12,8 @@
 
 It does some minimalistic tidying up of verse data - trimming, removing double spaces, etc
 
+Under the hood `sword-to-json` uses the excellent [pysword](https://pypi.python.org/pypi/pysword "Jesus loves you")
+
 
 
 <br>
@@ -34,15 +36,17 @@ If our examples don't offer the translation you want, you can use `sword-to-json
 
 (3) Move to the root folder .. `cd sword-to-json`
 
-(4) Place the ZIP file for each sword module you want to convert into the [sword-modules](/sword-modules "Jesus loves you") folder or a sub folder thereof
+(4) Install dependencies .. `pip install -r requirements.txt`
+
+(5) Place the ZIP file for each sword module you want to convert into the [sword-modules](/sword-modules "Jesus loves you") folder or a sub folder thereof
 
 *NOTE: Download sword module ZIP files from [Crosswire](http://crosswire.org/sword/modules/ModDisp.jsp?modType=Bibles "Jesus loves you") or [Ebible](http://ebible.org/find  "Jesus loves you")*
 
-(5) run .. `python sword_to_json.py`
+(6) run .. `python sword_to_json.py`
 
-(6) Wait for processing to complete
+(7) Wait for processing to complete
 
-(7) The JSON for your chosen sword modules will appear in the [bibles](/bibles "Jesus loves you") folder
+(8) The JSON for your chosen sword modules will appear in the [bibles](/bibles "Jesus loves you") folder
 
 
 
@@ -50,7 +54,7 @@ If our examples don't offer the translation you want, you can use `sword-to-json
 
 ## Advanced Usage
 
-At step (5) above you can run any of the following:
+At step (6) above you can run any of the following:
 
 `python sword_to_json.py` Creates JSON for sword modules, skipping modules for which the JSON already exists
 
