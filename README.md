@@ -58,7 +58,7 @@ For step (5) above you can run any of the following:
 
 `python sword_to_json.py --partials` - Creates JSON and partial JSON for sword modules, skipping modules for which the JSON already exists
 
-NOTE: partial JSON only shows some of the bible data and is pretty printed. It only exists to help you understand the structure of the JSON and is otherwise useless.
+NOTE: partial JSON only shows some of the bible data and is pretty printed. Its sole purpose is to help you understand the structure of the JSON and is otherwise useless.
 
 `python sword_to_json.py --overwrite --partials` - Creates JSON and partial JSON for sword modules without skipping
 
