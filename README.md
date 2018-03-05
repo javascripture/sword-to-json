@@ -8,7 +8,7 @@
 
 ## Introduction
 
-`sword-to-json` [dumbly](#limitations) converts Crosswire sword bible modules to JSON.
+`sword-to-json` [dumbly](#limitations) converts [Crosswire sword bible modules](http://crosswire.org/sword/modules/ModDisp.jsp?modType=Bibles "Jesus loves you") to JSON.
 
 It does some minimalistic tidying up of verse data - trimming, removing double spaces, etc
 
