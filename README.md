@@ -68,7 +68,7 @@ For step (5) above you can run any of the following:
 
 ## Limitations
 
-`sword-to-json` does not attempt to fix sword verse data but dumbly provides data as is.
+`sword-to-json` does not attempt to fix sword verse data but **dumbly** provides data as is.
 
 For example, using the KJV sword module [Romans 16:27 KJV](https://www.blueletterbible.org/kjv/rom/16/27/s_1062027 "Jesus loves you") reads:
 
