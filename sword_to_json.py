@@ -103,8 +103,8 @@ def get_bible_json(path, overwrite):
                     else:
                         raise e
 
-                if text is not None and version == 'ASV':
-                    text = text.encode('latin-1').decode('cp1252')
+                # if text is not None and version == 'ASV':
+                #     text = text.encode('latin-1').decode('cp1252')
 
                 if text is not None:
                     # TIDYUP - trim
