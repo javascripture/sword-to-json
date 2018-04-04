@@ -31,7 +31,6 @@ def write_bible_json(bible, partials):
         json.dump(bible, f, ensure_ascii=False)
 
     # pretty partial JSON file, only used for understanding JSON structure
-    # the partial file is git ignored
     if partials:
         for book in bible['books']:
             is_genesis = book['name'].lower().startswith('ge') or book['name'].lower().startswith('gn')
