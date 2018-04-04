@@ -5,8 +5,10 @@ versions = {
     'GodsWord': {'name': 'God\'s Word Translation', 'abbr': 'GW'},
     'Jubilee2000': {'name': 'Jubilee Bible 2000', 'abbr': 'JUB'},
     'KJV': {'name': 'Authorized King James Version'},
+    'LEB': {'name': 'Lexham English Bible'},
     'NETfree': {'name': 'New English Translation', 'abbr': 'NET'},
     'WEB': {'name': 'World English Bible'},
+    'engWMB2015eb': {'name': 'World Messianic Bible', 'abbr': 'WMB'},
     'YLT': {'name': 'Young\'s Literal Translation'}
 }
 
