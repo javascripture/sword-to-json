@@ -96,7 +96,7 @@ def get_bible_json(path, overwrite):
                 verse_num = verse_idx + 1
 
                 try:
-                    text = bible.get(books=[book.name], chapters=[chapter_num], verses=[verse_num])
+                    text = bible.get(books=[book.name], chapters=[chapter_num], verses=[verse_num], clean=True)
                 except Exception as e:
                     if 'incorrect header' in str(e):
                         text = None
