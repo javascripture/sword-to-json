@@ -62,6 +62,9 @@ def getTextArrayFromNode(node, verseArray):
                 morph = getMorphFromNode(node)
                 for x in u.childNodes:
                     word = x.nodeValue
+            elif u.nodeName == '#text':
+                word = u.nodeValue
+                strongs = 'added divineName'
 
     if word is None:
         word=''
@@ -80,9 +83,12 @@ def getTextArrayFromNode(node, verseArray):
         verseArray.append( textArray )
     return verseArray
 
-def getWordArrayFromNodes( nodes, verseArray ):
+def getWordArrayFromNodes( bookName, nodes, verseArray ):
     for node in nodes:
-        if node.nodeName == 'title' or node.nodeName == 'q':
+        if bookName == 'Psalms' and node.nodeName == 'title':
+            for childNode in node.childNodes:
+                verseArray = getTextArrayFromNode(childNode, verseArray)
+        elif node.nodeName == 'q':
             for childNode in node.childNodes:
                 verseArray = getTextArrayFromNode(childNode, verseArray)
         else:
@@ -185,7 +191,7 @@ def get_bible_json(path, overwrite, npm):
                 try:
                     text = bible.get(books=[book.name], chapters=[chapter_num], verses=[verse_num], clean=True)
                     textAsXML = getTextAsXML( bible.get(books=[book.name], chapters=[chapter_num], verses=[verse_num], clean=False) )
-                    verseArray = getWordArrayFromNodes( textAsXML, [] );
+                    verseArray = getWordArrayFromNodes( book.name, textAsXML, [] );
 
                 except Exception as e:
                     if 'incorrect header' in str(e):
