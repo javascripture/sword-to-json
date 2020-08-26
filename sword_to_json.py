@@ -41,6 +41,7 @@ def getTextArrayFromNode(node, verseArray):
         for w in node.childNodes:
             word = w.nodeValue
             if strongs == 'H3068' or strongs == 'H3069' or strongs == 'H3050': # an exception for divinename in the kjv
+                strongs = 'dvnNm ' + strongs
                 if w.nodeName == '#text':
                     word = w.nodeValue.strip()
                     verseArray.append( [ word ] )
@@ -55,10 +56,18 @@ def getTextArrayFromNode(node, verseArray):
     if node.nodeName == 'transChange':
         word = node.childNodes[0].nodeValue
         strongs = node.attributes['type'].value
+    if node.nodeName == 'foreign':
+        for u in node.childNodes:
+            if u.nodeName == 'w':
+                strongs = getStrongsFromNode(u)
+                morph = getMorphFromNode(node)
+                for x in u.childNodes:
+                    word = x.nodeValue
     if node.nodeName == 'divineName':
         for u in node.childNodes:
             if u.nodeName == 'w':
                 strongs = getStrongsFromNode(u)
+                strongs = 'dvnNm ' + strongs
                 morph = getMorphFromNode(node)
                 for x in u.childNodes:
                     word = x.nodeValue
@@ -93,6 +102,7 @@ def getWordArrayFromNodes( bookName, nodes, verseArray ):
                 verseArray = getTextArrayFromNode(childNode, verseArray)
         else:
             verseArray = getTextArrayFromNode(node, verseArray)
+
     return verseArray
 
 
@@ -171,7 +181,6 @@ def get_bible_json(path, overwrite, npm):
     books = []
     booksObj={}
     for book_idx, book in enumerate(raw_books):
-
         report.processed(book_idx + 1, book.osis_name, start)
         range_chapters = range(0, book.num_chapters)
 
@@ -245,7 +254,7 @@ def get_bible_json(path, overwrite, npm):
     assert chapter_count == 1189
     if npm:
         books = booksObj
- 
+
     return {
         'version': version,
         'versionName': lookup_version_name(sword_version),
