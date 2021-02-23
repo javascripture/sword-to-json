@@ -80,6 +80,9 @@ def getTextArrayFromNode(node, verseArray):
     else:
         word=word.strip()
 
+    if strongs is not None:
+        strongs = strongs.replace('strong:', '')
+
     textArray = None
     if word != '' and word != ' ':
         textArray = [ word ]
@@ -196,11 +199,12 @@ def get_bible_json(path, overwrite, npm):
             for verse_idx, xxxxx in enumerate(raw_verses):
 
                 verse_num = verse_idx + 1
+                verseArray = []
 
                 try:
                     text = bible.get(books=[book.name], chapters=[chapter_num], verses=[verse_num], clean=True)
                     textAsXML = getTextAsXML( bible.get(books=[book.name], chapters=[chapter_num], verses=[verse_num], clean=False) )
-                    verseArray = getWordArrayFromNodes( book.name, textAsXML, [] );
+                    verseArray = getWordArrayFromNodes( book.name, textAsXML, verseArray )
 
                 except Exception as e:
                     if 'incorrect header' in str(e):
