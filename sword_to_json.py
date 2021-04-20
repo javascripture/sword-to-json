@@ -96,6 +96,7 @@ def getTextArrayFromNode(node, verseArray):
     return verseArray
 
 def getWordArrayFromNodes( bookName, nodes, verseArray ):
+    verseArray = []
     for node in nodes:
         if bookName == 'Psalms' and node.nodeName == 'title':
             for childNode in node.childNodes:
@@ -203,7 +204,8 @@ def get_bible_json(path, overwrite, npm):
 
                 try:
                     text = bible.get(books=[book.name], chapters=[chapter_num], verses=[verse_num], clean=True)
-                    textAsXML = getTextAsXML( bible.get(books=[book.name], chapters=[chapter_num], verses=[verse_num], clean=False) )
+                    dirtyText = bible.get(books=[book.name], chapters=[chapter_num], verses=[verse_num], clean=False)
+                    textAsXML = getTextAsXML( dirtyText )
                     verseArray = getWordArrayFromNodes( book.name, textAsXML, verseArray )
 
                 except Exception as e:
