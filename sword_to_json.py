@@ -54,8 +54,13 @@ def getTextArrayFromNode(node, verseArray):
     if node.nodeName == '#text':
         word = node.nodeValue
     if node.nodeName == 'transChange':
-        word = node.childNodes[0].nodeValue
-        strongs = node.attributes['type'].value
+        if( len( node.childNodes ) > 1 ):
+            for w in node.childNodes:
+                verseArray = getTextArrayFromNode(w, verseArray)
+        else:
+            word = node.childNodes[0].nodeValue
+            strongs = node.attributes['type'].value
+
     if node.nodeName == 'foreign':
         for u in node.childNodes:
             if u.nodeName == 'w':
@@ -73,7 +78,7 @@ def getTextArrayFromNode(node, verseArray):
                     word = x.nodeValue
             elif u.nodeName == '#text':
                 word = u.nodeValue
-                strongs = 'added divineName'
+                strongs = 'added dvnNm'
 
     if word is None:
         word=''
