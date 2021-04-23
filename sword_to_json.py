@@ -31,54 +31,51 @@ def getMorphFromNode(node):
     except:
         return ''
 
-def getTextArrayFromNode(node, verseArray):
-    word = '';
-    strongs = '';
-    morph = '';
+def getTextArrayFromNode(node, verseArray, strongs=''):
+    word = ''
+    morph = ''
+
     if node.nodeName == 'w':
-        strongs = getStrongsFromNode(node)
+        strongs = strongs + getStrongsFromNode(node)
         morph = getMorphFromNode(node)
         for w in node.childNodes:
             word = w.nodeValue
-            if strongs == 'H3068' or strongs == 'H3069' or strongs == 'H3050': # an exception for divinename in the kjv
-                strongs = 'dvnNm ' + strongs
+            if strongs == 'H3068' or strongs == 'H3069' or strongs == 'H3050': # an exception for divinename in the kjv)
                 if w.nodeName == '#text':
                     word = w.nodeValue.strip()
                     verseArray.append( [ word ] )
                 if w.nodeName == 'divineName':
-                    verseArray = getTextArrayFromNode(w, verseArray)
-                    for u in w.childNodes:
-                        if u.nodeName == '#text':
-                            word = u.nodeValue.strip()
+                    verseArray = getTextArrayFromNode(w, verseArray, strongs)
+                    #for u in w.childNodes:
+                    #    if u.nodeName == '#text':
+                    #        word = u.nodeValue.strip()
 
     if node.nodeName == '#text':
         word = node.nodeValue
     if node.nodeName == 'transChange':
-        if( len( node.childNodes ) > 1 ):
-            for w in node.childNodes:
-                verseArray = getTextArrayFromNode(w, verseArray)
-        else:
-            word = node.childNodes[0].nodeValue
-            strongs = node.attributes['type'].value
+        strongs = node.attributes['type'].value
+        for w in node.childNodes:
+            verseArray = getTextArrayFromNode(w, verseArray, strongs)
 
     if node.nodeName == 'foreign':
         for u in node.childNodes:
             if u.nodeName == 'w':
-                strongs = getStrongsFromNode(u)
+                strongs = strongs + getStrongsFromNode(u)
                 morph = getMorphFromNode(node)
                 for x in u.childNodes:
                     word = x.nodeValue
     if node.nodeName == 'divineName':
         for u in node.childNodes:
             if u.nodeName == 'w':
-                strongs = getStrongsFromNode(u)
+                strongs = strongs + getStrongsFromNode(u)
                 strongs = 'dvnNm ' + strongs
                 morph = getMorphFromNode(node)
                 for x in u.childNodes:
                     word = x.nodeValue
             elif u.nodeName == '#text':
                 word = u.nodeValue
-                strongs = 'added dvnNm'
+                strongs = strongs + getStrongsFromNode(u)
+                strongs = 'dvnNm ' + strongs
 
     if word is None:
         word=''
