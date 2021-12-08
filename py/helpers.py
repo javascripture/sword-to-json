@@ -8,7 +8,7 @@ default_encoding = 'utf-8'
 def does_bible_json_exist(version, language):
     path = os.path.abspath(f'bibles/{language}/{version}')
     filename = f'{path}/{version}.json'
-    npm = f'{path}/{version}.js'
+    npm = f'{path}/{version}.json'
     return {
         'exists': os.path.exists(filename),
         'path': path,
@@ -30,7 +30,7 @@ def write_bible_json(bible, partials, npm):
     if npm:
         print(f'{version} - writing NPM file')
         with open(exists_obj['npm'], 'w', encoding=encoding) as f:
-            f.write('var '+version+'='+json.dumps(bible, ensure_ascii=False)+';module.exports='+version+';')
+            f.write(json.dumps(bible, ensure_ascii=False))
             f.close()
     else:
         # write real JSON file
