@@ -52,7 +52,7 @@ def getTextArrayFromNode(node, verseArray, strongs=''):
 
     if node.nodeName == '#text':
         word = node.nodeValue
-    if node.nodeName == 'transChange':
+    if node.nodeName == 'transChange' and node.attributes:
         strongs = node.attributes['type'].value
         for w in node.childNodes:
             verseArray = getTextArrayFromNode(w, verseArray, strongs)
@@ -93,6 +93,10 @@ def getTextArrayFromNode(node, verseArray, strongs=''):
         if morph != '':
             textArray = [ word, strongs, morph ]
 
+    if node.nodeName == 'verse':
+        for verseNode in node.childNodes:
+            textArray = verseNode.nodeValue
+
     if textArray is not None:
         verseArray.append( textArray )
     return verseArray
@@ -103,7 +107,7 @@ def getWordArrayFromNodes( bookName, nodes, verseArray ):
         if bookName == 'Psalms' and node.nodeName == 'title':
             for childNode in node.childNodes:
                 verseArray = getTextArrayFromNode(childNode, verseArray)
-        elif node.nodeName == 'q':
+        elif hasattr(node, 'nodeName') and node.nodeName == 'q':
             for childNode in node.childNodes:
                 verseArray = getTextArrayFromNode(childNode, verseArray)
         else:
@@ -112,8 +116,17 @@ def getWordArrayFromNodes( bookName, nodes, verseArray ):
     return verseArray
 
 
-def getTextAsXML( text ):
-    xmldoc = minidom.parseString('<v>'+text+'</v>')
+def getTextAsXML( dirtyText, cleanText ):
+    #print('dirtyText:', dirtyText)
+    #print('cleanText:', cleanText)
+    try:
+        xmldoc = minidom.parseString('<v>'+dirtyText+'</v>')
+    except Exception as e:
+        try:
+            xmldoc = minidom.parseString('<v>'+cleanText+'</v>')
+        except Exception as e2:
+            return False
+
     textAsXML = xmldoc.getElementsByTagName('v')
     return textAsXML[0].childNodes
 
@@ -168,15 +181,16 @@ def get_bible_json(path, overwrite, npm):
     assert bible_structure._book_offsets is None
 
     if bible_structure._books.get('ot') is None:
-        print(f'{version} - aborting, old testament missing')
-        return None
-
-    if bible_structure._books.get('nt') is None:
-        print(f'{version} - aborting, new testament missing')
-        return None
-
-    raw_books = bible_structure._books['ot'] + bible_structure._books['nt']
-    assert len(raw_books) == 66
+        raw_books = bible_structure._books['nt']
+        #print(f'{version} - aborting, old testament missing')
+        #return None
+    elif bible_structure._books.get('nt') is None:
+        raw_books = bible_structure._books['ot']
+        #print(f'{version} - aborting, new testament missing')
+        #return None
+    else:
+        raw_books = bible_structure._books['ot'] + bible_structure._books['nt']
+    ##assert len(raw_books) == 66
 
     # init processing
     start = time.time()
@@ -207,8 +221,10 @@ def get_bible_json(path, overwrite, npm):
                 try:
                     text = bible.get(books=[book.name], chapters=[chapter_num], verses=[verse_num], clean=True)
                     dirtyText = bible.get(books=[book.name], chapters=[chapter_num], verses=[verse_num], clean=False)
-                    textAsXML = getTextAsXML( dirtyText )
-                    verseArray = getWordArrayFromNodes( book.name, textAsXML, verseArray )
+                    if getTextAsXML( dirtyText, text ):
+                        verseArray = getWordArrayFromNodes( book.name, getTextAsXML( dirtyText, text ), verseArray )
+                    else:
+                        verseArray = text
 
                 except Exception as e:
                     if 'incorrect header' in str(e):
@@ -259,7 +275,7 @@ def get_bible_json(path, overwrite, npm):
 
     print()
     report.summary(len(books), chapter_count, verse_count)
-    assert chapter_count == 1189
+    #assert chapter_count == 1189
     if npm:
         books = booksObj
 
