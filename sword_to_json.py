@@ -35,7 +35,7 @@ def getTextArrayFromNode(node, verseArray, strongs=''):
     word = ''
     morph = ''
 
-    if node.nodeName == 'w':
+    if node.nodeName == 'w' or node.nodeName == 'item' or node.nodeName == 'seg':
         strongs = strongs + getStrongsFromNode(node)
         morph = getMorphFromNode(node)
         for w in node.childNodes:
@@ -95,7 +95,7 @@ def getTextArrayFromNode(node, verseArray, strongs=''):
 
     if node.nodeName == 'verse':
         for verseNode in node.childNodes:
-            textArray = verseNode.nodeValue
+            textArray = [ verseNode.nodeValue ]
 
     if textArray is not None:
         verseArray.append( textArray )
@@ -117,8 +117,7 @@ def getWordArrayFromNodes( bookName, nodes, verseArray ):
 
 
 def getTextAsXML( dirtyText, cleanText ):
-    #print('dirtyText:', dirtyText)
-    #print('cleanText:', cleanText)
+    #print(f'{dirtyText}')
     try:
         xmldoc = minidom.parseString('<v>'+dirtyText+'</v>')
     except Exception as e:
@@ -221,10 +220,13 @@ def get_bible_json(path, overwrite, npm):
                 try:
                     text = bible.get(books=[book.name], chapters=[chapter_num], verses=[verse_num], clean=True)
                     dirtyText = bible.get(books=[book.name], chapters=[chapter_num], verses=[verse_num], clean=False)
-                    if getTextAsXML( dirtyText, text ):
-                        verseArray = getWordArrayFromNodes( book.name, getTextAsXML( dirtyText, text ), verseArray )
+                    #print(f'{book.name} {chapter_num} {verse_num}')
+                    textAsXML = getTextAsXML( dirtyText, text )
+                    if textAsXML and textAsXML != '':
+                        verseArray = getWordArrayFromNodes( book.name, textAsXML, verseArray )
                     else:
-                        verseArray = text
+                        if text != '':
+                            verseArray = text
 
                 except Exception as e:
                     if 'incorrect header' in str(e):
@@ -252,28 +254,33 @@ def get_bible_json(path, overwrite, npm):
                     text = text.replace('\u2013', '-')
                     text = text.replace('\u2019', '\'')
 
-                verses.append({
-                    'number': verse_num,
-                    'text': text
-                })
+                if ( text is not None and text != '' ):
+                    verses.append({
+                        'number': verse_num,
+                        'text': text
+                    })
                 verse_count += 1
-                versesObj.append(verseArray)
+                if verseArray != []:
+                    versesObj.append(verseArray)
 
-            chapters.append({
-                'number': chapter_num,
-                'verses': verses
-            })
+            if verses != []:
+                chapters.append({
+                    'number': chapter_num,
+                    'verses': verses
+                })
             chapter_count += 1
-            chaptersObj.append(versesObj)
+            if versesObj != []:
+                chaptersObj.append(versesObj)
 
-        books.append({
-            'name': book.osis_name,
-            'verses_per_chapter': book.chapter_lengths,
-            'chapters': chapters,
-        })
-        booksObj[book.name] = chaptersObj
+        if chapters != []:
+            books.append({
+                'name': book.osis_name,
+                'verses_per_chapter': book.chapter_lengths,
+                'chapters': chapters,
+            })
+        if chaptersObj != []:
+            booksObj[book.name] = chaptersObj
 
-    print()
     report.summary(len(books), chapter_count, verse_count)
     #assert chapter_count == 1189
     if npm:
