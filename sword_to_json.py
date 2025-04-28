@@ -6,13 +6,131 @@ from py.helpers import does_bible_json_exist
 from py.helpers import write_bible_json
 from py.Report import Report
 from py.versions import lookup_version_abbr, lookup_version_name
+from xml.dom import minidom
 
 # from pprint import pprint  # pprint(vars(book))
 default_encoding = 'utf-8'
 
+def getStrongsFromNode(node):
+    try:
+        lemmaString = node.attributes['lemma']
+        lemmaArray=[]
+        for lemma in lemmaString.value.split(' '):
+            try:
+                lemma.index('lemma')
+            except:
+                lemmaArray.append(lemma.replace('strong:H0', 'H').replace('strong:G','G'))
+
+        return ' '.join(lemmaArray)
+    except:
+        return ''
+
+def getMorphFromNode(node):
+    try:
+        return node.attributes['morph'].value.replace('strongMorph:TH', 'TH').replace('robinson:', '')
+    except:
+        return ''
+
+def getTextArrayFromNode(node, verseArray, strongs=''):
+    word = ''
+    morph = ''
+
+    if node.nodeName == 'w' or node.nodeName == 'item' or node.nodeName == 'seg':
+        strongs = strongs + getStrongsFromNode(node)
+        morph = getMorphFromNode(node)
+        for w in node.childNodes:
+            word = w.nodeValue
+            if strongs == 'H3068' or strongs == 'H3069' or strongs == 'H3050': # an exception for divinename in the kjv)
+                if w.nodeName == '#text':
+                    word = w.nodeValue.strip()
+                    verseArray.append( [ word ] )
+                if w.nodeName == 'divineName':
+                    verseArray = getTextArrayFromNode(w, verseArray, strongs)
+                    #for u in w.childNodes:
+                    #    if u.nodeName == '#text':
+                    #        word = u.nodeValue.strip()
+
+    if node.nodeName == '#text':
+        word = node.nodeValue
+    if node.nodeName == 'transChange' and node.attributes:
+        strongs = node.attributes['type'].value
+        for w in node.childNodes:
+            verseArray = getTextArrayFromNode(w, verseArray, strongs)
+
+    if node.nodeName == 'foreign':
+        for u in node.childNodes:
+            if u.nodeName == 'w':
+                strongs = strongs + getStrongsFromNode(u)
+                morph = getMorphFromNode(node)
+                for x in u.childNodes:
+                    word = x.nodeValue
+    if node.nodeName == 'divineName':
+        for u in node.childNodes:
+            if u.nodeName == 'w':
+                strongs = strongs + getStrongsFromNode(u)
+                strongs = 'dvnNm ' + strongs
+                morph = getMorphFromNode(node)
+                for x in u.childNodes:
+                    word = x.nodeValue
+            elif u.nodeName == '#text':
+                word = u.nodeValue
+                strongs = strongs + getStrongsFromNode(u)
+                strongs = 'dvnNm ' + strongs
+
+    if word is None:
+        word=''
+    else:
+        word=word.strip()
+
+    if strongs is not None:
+        strongs = strongs.replace('strong:', '')
+
+    textArray = None
+    if word != '' and word != ' ':
+        textArray = [ word ]
+        if strongs != '':
+            textArray = [ word, strongs ]
+        if morph != '':
+            textArray = [ word, strongs, morph ]
+
+    if node.nodeName == 'verse':
+        for verseNode in node.childNodes:
+            textArray = [ verseNode.nodeValue ]
+
+    if textArray is not None:
+        verseArray.append( textArray )
+    return verseArray
+
+def getWordArrayFromNodes( bookName, nodes, verseArray ):
+    verseArray = []
+    for node in nodes:
+        if bookName == 'Psalms' and node.nodeName == 'title':
+            for childNode in node.childNodes:
+                verseArray = getTextArrayFromNode(childNode, verseArray)
+        elif hasattr(node, 'nodeName') and node.nodeName == 'q':
+            for childNode in node.childNodes:
+                verseArray = getTextArrayFromNode(childNode, verseArray)
+        else:
+            verseArray = getTextArrayFromNode(node, verseArray)
+
+    return verseArray
+
+
+def getTextAsXML( dirtyText, cleanText ):
+    #print(f'{dirtyText}')
+    try:
+        xmldoc = minidom.parseString('<v>'+dirtyText+'</v>')
+    except Exception as e:
+        try:
+            xmldoc = minidom.parseString('<v>'+cleanText+'</v>')
+        except Exception as e2:
+            return False
+
+    textAsXML = xmldoc.getElementsByTagName('v')
+    return textAsXML[0].childNodes
 
 # noinspection PyProtectedMember
-def get_bible_json(path, overwrite):
+def get_bible_json(path, overwrite, npm):
     # load sword module
     modules = SwordModules(path)
     found_modules = modules.parse_modules()
@@ -62,15 +180,16 @@ def get_bible_json(path, overwrite):
     assert bible_structure._book_offsets is None
 
     if bible_structure._books.get('ot') is None:
-        print(f'{version} - aborting, old testament missing')
-        return None
-
-    if bible_structure._books.get('nt') is None:
-        print(f'{version} - aborting, new testament missing')
-        return None
-
-    raw_books = bible_structure._books['ot'] + bible_structure._books['nt']
-    assert len(raw_books) == 66
+        raw_books = bible_structure._books['nt']
+        #print(f'{version} - aborting, old testament missing')
+        #return None
+    elif bible_structure._books.get('nt') is None:
+        raw_books = bible_structure._books['ot']
+        #print(f'{version} - aborting, new testament missing')
+        #return None
+    else:
+        raw_books = bible_structure._books['ot'] + bible_structure._books['nt']
+    ##assert len(raw_books) == 66
 
     # init processing
     start = time.time()
@@ -79,24 +198,36 @@ def get_bible_json(path, overwrite):
 
     # main processing
     books = []
+    booksObj={}
     for book_idx, book in enumerate(raw_books):
-
         report.processed(book_idx + 1, book.osis_name, start)
         range_chapters = range(0, book.num_chapters)
 
         chapters = []
+        chaptersObj=[]
         for chapter_idx in range_chapters:
 
             chapter_num = chapter_idx + 1
             raw_verses = book.get_indicies(chapter_num)
 
             verses = []
+            versesObj = []
             for verse_idx, xxxxx in enumerate(raw_verses):
 
                 verse_num = verse_idx + 1
+                verseArray = []
 
                 try:
                     text = bible.get(books=[book.name], chapters=[chapter_num], verses=[verse_num], clean=True)
+                    dirtyText = bible.get(books=[book.name], chapters=[chapter_num], verses=[verse_num], clean=False)
+                    #print(f'{book.name} {chapter_num} {verse_num}')
+                    textAsXML = getTextAsXML( dirtyText, text )
+                    if textAsXML and textAsXML != '':
+                        verseArray = getWordArrayFromNodes( book.name, textAsXML, verseArray )
+                    else:
+                        if text != '':
+                            verseArray = text
+
                 except Exception as e:
                     if 'incorrect header' in str(e):
                         text = None
@@ -123,27 +254,38 @@ def get_bible_json(path, overwrite):
                     text = text.replace('\u2013', '-')
                     text = text.replace('\u2019', '\'')
 
-                verses.append({
-                    'number': verse_num,
-                    'text': text
-                })
+                if ( text is not None and text != '' ):
+                    verses.append({
+                        'number': verse_num,
+                        'text': text
+                    })
                 verse_count += 1
+                if verseArray != []:
+                    versesObj.append(verseArray)
 
-            chapters.append({
-                'number': chapter_num,
-                'verses': verses
-            })
+            if verses != []:
+                chapters.append({
+                    'number': chapter_num,
+                    'verses': verses
+                })
             chapter_count += 1
+            if versesObj != []:
+                chaptersObj.append(versesObj)
 
-        books.append({
-            'name': book.osis_name,
-            'verses_per_chapter': book.chapter_lengths,
-            'chapters': chapters,
-        })
+        if chapters != []:
+            books.append({
+                'name': book.osis_name,
+                'verses_per_chapter': book.chapter_lengths,
+                'chapters': chapters,
+            })
+        if chaptersObj != []:
+            booksObj[book.name] = chaptersObj
 
-    print()
     report.summary(len(books), chapter_count, verse_count)
-    assert chapter_count == 1189
+    #assert chapter_count == 1189
+    if npm:
+        books = booksObj
+
     return {
         'version': version,
         'versionName': lookup_version_name(sword_version),
@@ -156,15 +298,17 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--overwrite', action='store_true')
     parser.add_argument('--partials', action='store_true')
+    parser.add_argument('--npm', action='store_true')
     args = parser.parse_args()
     overwrite = args.overwrite
     partials = args.partials
+    npm = args.npm
 
     paths = Path('sword-modules').glob('**/*.zip')
     for path in paths:
-        bible = get_bible_json(str(path), overwrite)
+        bible = get_bible_json(str(path), overwrite, npm)
         if bible is not None:
-            write_bible_json(bible, partials)
+            write_bible_json(bible, partials, npm)
 
 
 if __name__ == '__main__':
